@@ -10,7 +10,7 @@ deploy: build
 
 test-register:
 	stellar contract invoke \
-	  --id CBQU2RZBGRL7CZUUIEIJFTCU2EW47UVT5KNF3MASJLT6OUJZN5RXRSN2 \
+	  --id CB67JJXMXIIDUE2DCXMQZTPAHUU73CYHFDRK2WVX3EVULBDHRWOVXKH4 \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \

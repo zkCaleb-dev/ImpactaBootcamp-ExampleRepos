@@ -1,9 +1,25 @@
-import { contract } from "@stellar/stellar-sdk";
+import "dotenv/config";
+import express from "express";
+import productsRouter from "./routes/products.js";
 
-const xlm = await contract.Client.from({
-    contractId: "CAXADSZB4QN6DKEXV6HXWTQTS23IRFWPOD24Z4ZICWZJ3FIDXHGWN6WQ",
-    networkPassphrase: "Test SDF Network ; September 2015",
-    rpcUrl: "https://soroban-testnet.stellar.org",
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+
+// Rutas
+app.use("/products", productsRouter);
+
+// Health check
+app.get("/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-console.log("Cliente conectado:", xlm);
+app.listen(PORT, () => {
+    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log("Endpoints disponibles:");
+    console.log("  POST   /products           - Registrar producto");
+    console.log("  GET    /products/:id       - Obtener producto");
+    console.log("  PUT    /products/:id/stock - Actualizar stock");
+    console.log("  PUT    /products/:id/price - Actualizar precio");
+});
