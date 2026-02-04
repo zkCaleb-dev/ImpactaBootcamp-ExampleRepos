@@ -1,18 +1,8 @@
 import { Router } from "express";
 import { getContractClient } from "../config/stellar.js";
+import { formatProduct } from "../types/product.js";
 
 const router = Router();
-
-// Helper para convertir BigInt a Number en el producto
-function formatProduct(product) {
-    return {
-        id: Number(product.id),
-        name: product.name,
-        description: product.description,
-        price: Number(product.price),
-        stock: Number(product.stock)
-    };
-}
 
 // POST /products - Registrar un nuevo producto
 router.post("/", async (req, res) => {
