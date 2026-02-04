@@ -15,6 +15,9 @@ Thumbs.db
 *.sublime-workspace
 *.sublime-project
 
+# Claude
+.claude/
+
 # Rust
 target/
 **/*.rs.bk

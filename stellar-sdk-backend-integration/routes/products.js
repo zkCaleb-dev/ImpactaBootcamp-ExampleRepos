@@ -3,6 +3,17 @@ import { getContractClient } from "../config/stellar.js";
 
 const router = Router();
 
+// Helper para convertir BigInt a Number en el producto
+function formatProduct(product) {
+    return {
+        id: Number(product.id),
+        name: product.name,
+        description: product.description,
+        price: Number(product.price),
+        stock: Number(product.stock)
+    };
+}
+
 // POST /products - Registrar un nuevo producto
 router.post("/", async (req, res) => {
     try {
@@ -16,18 +27,18 @@ router.post("/", async (req, res) => {
 
         const client = await getContractClient();
 
-        const result = await client.register_product({
-            name,
-            description,
+        const tx = await client.register_product({
+            name: String(name),
+            description: String(description),
             price: BigInt(price),
-            initial_stock: initial_stock
+            initial_stock: Number(initial_stock)
         });
 
-        await result.signAndSend();
+        const { result } = await tx.signAndSend();
 
         res.status(201).json({
             message: "Producto registrado exitosamente",
-            result: result.result
+            product: formatProduct(result)
         });
     } catch (error) {
         console.error("Error registrando producto:", error);
@@ -46,22 +57,17 @@ router.get("/:id", async (req, res) => {
 
         const client = await getContractClient();
 
-        const result = await client.get_product({
+        const tx = await client.get_product({
             product_id: BigInt(productId)
         });
 
-        if (!result.result) {
+        const product = tx.result;
+
+        if (!product) {
             return res.status(404).json({ error: "Producto no encontrado" });
         }
 
-        const product = result.result;
-        res.json({
-            id: Number(product.id),
-            name: product.name,
-            description: product.description,
-            price: Number(product.price),
-            stock: Number(product.stock)
-        });
+        res.json(formatProduct(product));
     } catch (error) {
         console.error("Error obteniendo producto:", error);
         res.status(500).json({ error: error.message });
@@ -92,17 +98,17 @@ router.put("/:id/stock", async (req, res) => {
 
         const client = await getContractClient();
 
-        const result = await client.update_stock({
+        const tx = await client.update_stock({
             product_id: BigInt(productId),
             quantity: quantity,
             operation: operation
         });
 
-        await result.signAndSend();
+        const { result } = await tx.signAndSend();
 
         res.json({
             message: "Stock actualizado exitosamente",
-            result: result.result
+            product: formatProduct(result)
         });
     } catch (error) {
         console.error("Error actualizando stock:", error);
@@ -128,16 +134,16 @@ router.put("/:id/price", async (req, res) => {
 
         const client = await getContractClient();
 
-        const result = await client.update_price({
+        const tx = await client.update_price({
             product_id: BigInt(productId),
             new_price: BigInt(new_price)
         });
 
-        await result.signAndSend();
+        const { result } = await tx.signAndSend();
 
         res.json({
             message: "Precio actualizado exitosamente",
-            result: result.result
+            product: formatProduct(result)
         });
     } catch (error) {
         console.error("Error actualizando precio:", error);
