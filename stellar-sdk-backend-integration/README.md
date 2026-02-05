@@ -9,7 +9,7 @@ Este proyecto es una API REST que actua como intermediario entre aplicaciones cl
 ### Funcionalidades principales
 
 - **Registrar productos**: Crear nuevos productos en el contrato con nombre, descripcion, precio y stock inicial
-- **Consultar productos**: Obtener informacion de un producto por su ID
+- **Consultar productos**: Obtener información de un producto por su ID
 - **Actualizar stock**: Incrementar o decrementar el inventario de un producto
 - **Actualizar precio**: Modificar el precio de un producto existente
 
