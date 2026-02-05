@@ -2,7 +2,7 @@ import { Keypair, contract, Networks, rpc } from "@stellar/stellar-sdk";
 
 const { basicNodeSigner } = contract;
 
-const CONTRACT_ID = process.env.CONTRACT_ID || "CB67JJXMXIIDUE2DCXMQZTPAHUU73CYHFDRK2WVX3EVULBDHRWOVXKH4";
+const CONTRACT_ID = "CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM";
 const RPC_URL = process.env.RPC_URL || "https://soroban-testnet.stellar.org";
 const NETWORK_PASSPHRASE = process.env.NETWORK_PASSPHRASE || Networks.TESTNET;
 

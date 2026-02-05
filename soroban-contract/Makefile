@@ -10,7 +10,7 @@ deploy: build
 
 test-register:
 	stellar contract invoke \
-	  --id CB67JJXMXIIDUE2DCXMQZTPAHUU73CYHFDRK2WVX3EVULBDHRWOVXKH4 \
+	  --id CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \
@@ -22,7 +22,7 @@ test-register:
 
 test-stock-add:
 	stellar contract invoke \
-	  --id CBQU2RZBGRL7CZUUIEIJFTCU2EW47UVT5KNF3MASJLT6OUJZN5RXRSN2 \
+	  --id CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \
@@ -33,7 +33,7 @@ test-stock-add:
 
 test-stock-sub:
 	stellar contract invoke \
-	  --id CBQU2RZBGRL7CZUUIEIJFTCU2EW47UVT5KNF3MASJLT6OUJZN5RXRSN2 \
+	  --id CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \
@@ -44,7 +44,7 @@ test-stock-sub:
 
 test-price:
 	stellar contract invoke \
-	  --id CBQU2RZBGRL7CZUUIEIJFTCU2EW47UVT5KNF3MASJLT6OUJZN5RXRSN2 \
+	  --id CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \
@@ -54,7 +54,7 @@ test-price:
 
 test-get:
 	stellar contract invoke \
-	  --id CBQU2RZBGRL7CZUUIEIJFTCU2EW47UVT5KNF3MASJLT6OUJZN5RXRSN2 \
+	  --id CCFFNRMOVQPSUIQWMIBWRJC56WN7BWHKDKDCIEUMXNDMVFMEOG5JOSVM \
 	  --source-account zkCaleb \
 	  --network testnet \
 	  -- \
