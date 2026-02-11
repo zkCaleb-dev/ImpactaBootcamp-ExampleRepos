@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getContractClientForSigner } from "../config/stellar.js";
+import { getContractClientForSigner, CONTRACT_ID } from "../config/stellar.js";
 import { formatProduct } from "../types/product.js";
 
 const router = Router();
@@ -87,7 +87,7 @@ router.get("/:id", async (req, res) => {
       return res.status(404).json({ error: "Producto no encontrado" });
     }
 
-    res.json(formatProduct(product));
+    res.json({ ...formatProduct(product), contractId: CONTRACT_ID });
   } catch (error) {
     console.error("Error obteniendo producto:", error);
     res.status(500).json({ error: error.message });

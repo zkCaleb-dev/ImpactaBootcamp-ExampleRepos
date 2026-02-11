@@ -15,6 +15,7 @@ const STELLAR_EXPERT_BASE = "https://stellar.expert/explorer/testnet";
 
 export function ProductCard() {
   const { product, txHash, contractId } = useProductContext();
+  const effectiveContractId = contractId ?? product?.contractId;
 
   if (!product) return null;
 
@@ -49,13 +50,13 @@ export function ProductCard() {
           </div>
         </div>
 
-        {(contractId || txHash) && (
+        {(effectiveContractId || txHash) && (
           <>
             <Separator />
             <div className="space-y-1.5 text-xs">
-              {contractId && (
+              {effectiveContractId && (
                 <a
-                  href={`${STELLAR_EXPERT_BASE}/contract/${contractId}`}
+                  href={`${STELLAR_EXPERT_BASE}/contract/${effectiveContractId}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-primary hover:underline truncate font-medium"

@@ -4,6 +4,8 @@ export interface Product {
   description: string;
   price: number;
   stock: number;
+  /** Incluido cuando el producto se obtiene por búsqueda (GET) o al crear/actualizar */
+  contractId?: string;
 }
 
 export interface RegisterProductRequest {

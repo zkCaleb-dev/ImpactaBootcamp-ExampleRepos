@@ -86,7 +86,7 @@ export function UpdateStockForm() {
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full">
                       <SelectValue placeholder="Seleccionar" />
                     </SelectTrigger>
                   </FormControl>
