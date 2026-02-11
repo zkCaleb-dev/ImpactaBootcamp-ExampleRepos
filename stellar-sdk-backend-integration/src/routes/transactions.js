@@ -3,6 +3,7 @@ import {
   getRpcServer,
   NETWORK_PASSPHRASE,
   TransactionBuilder,
+  CONTRACT_ID,
 } from "../config/stellar.js";
 
 const router = Router();
@@ -61,6 +62,7 @@ router.post("/send", async (req, res) => {
         status: "SUCCESS",
         hash: sendResponse.hash,
         ledger: getResponse.ledger,
+        contractId: CONTRACT_ID,
         resultXdr: getResponse.resultXdr?.toXDR("base64"),
       });
     } else if (getResponse.status === "FAILED") {
