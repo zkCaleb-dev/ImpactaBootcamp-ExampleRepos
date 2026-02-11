@@ -4,6 +4,7 @@ import { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ProductProvider } from "@/context/product-context";
 import { Toaster } from "@/components/ui/sonner";
+import { WalletProvider } from "./tw-blocks/providers/WalletProvider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -19,11 +20,13 @@ export function Providers({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ProductProvider>
-        {children}
-        <Toaster richColors position="top-right" />
-      </ProductProvider>
-    </QueryClientProvider>
+    <WalletProvider>
+      <QueryClientProvider client={queryClient}>
+        <ProductProvider>
+          {children}
+          <Toaster richColors position="top-right" />
+        </ProductProvider>
+      </QueryClientProvider>
+    </WalletProvider>
   );
 }
