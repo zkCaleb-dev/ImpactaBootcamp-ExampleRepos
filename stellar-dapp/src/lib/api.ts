@@ -4,7 +4,9 @@ import type {
   UpdateStockRequest,
   UpdatePriceRequest,
   Product,
-  ProductResponse,
+  UnsignedTxResponse,
+  SendTransactionRequest,
+  SendTransactionResponse,
 } from "@/types/product";
 
 const API_BASE_URL =
@@ -15,30 +17,57 @@ export const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// -- Endpoints de escritura: retornan unsignedTx --
+
 export async function registerProduct(
   data: RegisterProductRequest
-): Promise<ProductResponse> {
-  const res = await api.post<ProductResponse>("/products", data);
-  return res.data;
-}
-
-export async function getProduct(id: number): Promise<Product> {
-  const res = await api.get<Product>(`/products/${id}`);
+): Promise<UnsignedTxResponse> {
+  const res = await api.post<UnsignedTxResponse>("/products", data);
   return res.data;
 }
 
 export async function updateStock(
   id: number,
   data: UpdateStockRequest
-): Promise<ProductResponse> {
-  const res = await api.put<ProductResponse>(`/products/${id}/stock`, data);
+): Promise<UnsignedTxResponse> {
+  const res = await api.put<UnsignedTxResponse>(
+    `/products/${id}/stock`,
+    data
+  );
   return res.data;
 }
 
 export async function updatePrice(
   id: number,
   data: UpdatePriceRequest
-): Promise<ProductResponse> {
-  const res = await api.put<ProductResponse>(`/products/${id}/price`, data);
+): Promise<UnsignedTxResponse> {
+  const res = await api.put<UnsignedTxResponse>(
+    `/products/${id}/price`,
+    data
+  );
+  return res.data;
+}
+
+// -- Endpoint de lectura: retorna producto directamente --
+
+export async function getProduct(
+  id: number,
+  signer: string
+): Promise<Product> {
+  const res = await api.get<Product>(`/products/${id}`, {
+    params: { signer },
+  });
+  return res.data;
+}
+
+// -- Enviar transacción firmada --
+
+export async function sendTransaction(
+  signedTx: string
+): Promise<SendTransactionResponse> {
+  const res = await api.post<SendTransactionResponse>(
+    "/transactions/send",
+    { signedTx } satisfies SendTransactionRequest
+  );
   return res.data;
 }

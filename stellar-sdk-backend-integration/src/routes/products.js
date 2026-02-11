@@ -1,13 +1,19 @@
 import { Router } from "express";
-import { getContractClient } from "../config/stellar.js";
+import { getContractClientForSigner } from "../config/stellar.js";
 import { formatProduct } from "../types/product.js";
 
 const router = Router();
 
-// POST /products - Registrar un nuevo producto
+// POST /products - Registrar un nuevo producto (retorna unsignedTx)
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, initial_stock } = req.body;
+    const { name, description, price, initial_stock, signer } = req.body;
+
+    if (!signer) {
+      return res.status(400).json({
+        error: "Falta campo requerido: signer (public key de la wallet)",
+      });
+    }
 
     if (
       !name ||
@@ -21,7 +27,7 @@ router.post("/", async (req, res) => {
       });
     }
 
-    const client = await getContractClient();
+    const client = await getContractClientForSigner(signer);
 
     const tx = await client.register_product({
       name: String(name),
@@ -30,19 +36,25 @@ router.post("/", async (req, res) => {
       initial_stock: Number(initial_stock),
     });
 
-    const { result } = await tx.signAndSend();
+    // Retornar la transacción sin firmar como XDR
+    // El frontend debe firmar con la wallet y luego enviarla via POST /transactions/send
+    const unsignedTx = tx.toXDR();
 
-    res.status(201).json({
-      message: "Producto registrado exitosamente",
-      product: formatProduct(result),
-    });
+    // ANTIGUO: firma server-side (comentado)
+    // const { result } = await tx.signAndSend();
+    // res.status(201).json({
+    //   message: "Producto registrado exitosamente",
+    //   product: formatProduct(result),
+    // });
+
+    res.status(200).json({ unsignedTx });
   } catch (error) {
-    console.error("Error registrando producto:", error);
+    console.error("Error construyendo transacción de registro:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// GET /products/:id - Obtener un producto por ID
+// GET /products/:id - Obtener un producto por ID (lectura, no requiere firma)
 router.get("/:id", async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
@@ -51,7 +63,16 @@ router.get("/:id", async (req, res) => {
       return res.status(400).json({ error: "ID de producto inválido" });
     }
 
-    const client = await getContractClient();
+    const signer = req.query.signer;
+
+    if (!signer) {
+      return res.status(400).json({
+        error:
+          "Falta query param requerido: signer (public key de la wallet)",
+      });
+    }
+
+    const client = await getContractClientForSigner(signer);
 
     const tx = await client.get_product({
       product_id: BigInt(productId),
@@ -70,11 +91,17 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// PUT /products/:id/stock - Actualizar stock de un producto
+// PUT /products/:id/stock - Actualizar stock (retorna unsignedTx)
 router.put("/:id/stock", async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
-    const { quantity, operation } = req.body;
+    const { quantity, operation, signer } = req.body;
+
+    if (!signer) {
+      return res.status(400).json({
+        error: "Falta campo requerido: signer (public key de la wallet)",
+      });
+    }
 
     if (isNaN(productId)) {
       return res.status(400).json({ error: "ID de producto inválido" });
@@ -92,7 +119,7 @@ router.put("/:id/stock", async (req, res) => {
       });
     }
 
-    const client = await getContractClient();
+    const client = await getContractClientForSigner(signer);
 
     const tx = await client.update_stock({
       product_id: BigInt(productId),
@@ -100,23 +127,33 @@ router.put("/:id/stock", async (req, res) => {
       operation: operation,
     });
 
-    const { result } = await tx.signAndSend();
+    const unsignedTx = tx.toXDR();
 
-    res.json({
-      message: "Stock actualizado exitosamente",
-      product: formatProduct(result),
-    });
+    // ANTIGUO: firma server-side (comentado)
+    // const { result } = await tx.signAndSend();
+    // res.json({
+    //   message: "Stock actualizado exitosamente",
+    //   product: formatProduct(result),
+    // });
+
+    res.status(200).json({ unsignedTx });
   } catch (error) {
-    console.error("Error actualizando stock:", error);
+    console.error("Error construyendo transacción de stock:", error);
     res.status(500).json({ error: error.message });
   }
 });
 
-// PUT /products/:id/price - Actualizar precio de un producto
+// PUT /products/:id/price - Actualizar precio (retorna unsignedTx)
 router.put("/:id/price", async (req, res) => {
   try {
     const productId = parseInt(req.params.id);
-    const { new_price } = req.body;
+    const { new_price, signer } = req.body;
+
+    if (!signer) {
+      return res.status(400).json({
+        error: "Falta campo requerido: signer (public key de la wallet)",
+      });
+    }
 
     if (isNaN(productId)) {
       return res.status(400).json({ error: "ID de producto inválido" });
@@ -128,21 +165,25 @@ router.put("/:id/price", async (req, res) => {
       });
     }
 
-    const client = await getContractClient();
+    const client = await getContractClientForSigner(signer);
 
     const tx = await client.update_price({
       product_id: BigInt(productId),
       new_price: BigInt(new_price),
     });
 
-    const { result } = await tx.signAndSend();
+    const unsignedTx = tx.toXDR();
 
-    res.json({
-      message: "Precio actualizado exitosamente",
-      product: formatProduct(result),
-    });
+    // ANTIGUO: firma server-side (comentado)
+    // const { result } = await tx.signAndSend();
+    // res.json({
+    //   message: "Precio actualizado exitosamente",
+    //   product: formatProduct(result),
+    // });
+
+    res.status(200).json({ unsignedTx });
   } catch (error) {
-    console.error("Error actualizando precio:", error);
+    console.error("Error construyendo transacción de precio:", error);
     res.status(500).json({ error: error.message });
   }
 });

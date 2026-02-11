@@ -2,22 +2,27 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { registerProduct } from "@/lib/api";
-import { useProductContext } from "./use-product-context";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
+import type { RegisterProductValues } from "@/lib/validations";
+
+// TODO: Reemplazar con la public key de la wallet conectada
+const PLACEHOLDER_SIGNER =
+  "GAWVVSA6OUB2T2A6Q4E4YS75PO32YK7TKQJQDODA4GAY7SHGQOETVYPD";
 
 export function useRegisterProduct() {
-  const { setProduct } = useProductContext();
-
   return useMutation({
-    mutationFn: registerProduct,
+    mutationFn: (values: RegisterProductValues) =>
+      registerProduct({
+        ...values,
+        signer: PLACEHOLDER_SIGNER, // TODO: usar wallet real
+      }),
     onSuccess: (data) => {
-      setProduct(data.product);
-      toast.success(data.message);
+      toast.success("Transacción construida. Pendiente de firma con wallet.");
+      console.log("unsignedTx:", data.unsignedTx);
     },
     onError: (error: AxiosError<{ error: string }>) => {
-      const message =
-        error.response?.data?.error || error.message;
+      const message = error.response?.data?.error || error.message;
       toast.error(message);
     },
   });
