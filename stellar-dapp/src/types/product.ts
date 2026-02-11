@@ -28,6 +28,7 @@ export interface UpdatePriceRequest {
 // Respuesta de los endpoints de escritura (unsignedTx)
 export interface UnsignedTxResponse {
   unsignedTx: string;
+  product?: Product;
 }
 
 // Request para enviar una transacción firmada

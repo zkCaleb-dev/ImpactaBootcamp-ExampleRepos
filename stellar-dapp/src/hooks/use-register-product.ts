@@ -10,7 +10,7 @@ import { AxiosError } from "axios";
 import type { RegisterProductValues } from "@/lib/validations";
 
 export function useRegisterProduct() {
-  const { setTxInfo } = useProductContext();
+  const { setProduct, setTxInfo } = useProductContext();
   const { walletAddress } = useWalletContext();
 
   return useMutation({
@@ -19,8 +19,8 @@ export function useRegisterProduct() {
         throw new Error("Conecte su Wallet");
       }
 
-      // 1. Build: obtener unsignedTx del backend
-      const { unsignedTx } = await registerProduct({
+      // 1. Build: obtener unsignedTx y producto simulado del backend
+      const { unsignedTx, product } = await registerProduct({
         ...values,
         signer: walletAddress,
       });
@@ -34,9 +34,12 @@ export function useRegisterProduct() {
       // 3. Send: enviar la transacción firmada
       const result = await sendTransaction(signedTx);
 
-      return result;
+      return { ...result, product };
     },
     onSuccess: (data) => {
+      if (data.product) {
+        setProduct(data.product);
+      }
       setTxInfo(data.hash, data.contractId);
       toast.success("Producto registrado exitosamente");
     },

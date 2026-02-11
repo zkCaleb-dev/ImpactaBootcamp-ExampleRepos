@@ -40,6 +40,9 @@ router.post("/", async (req, res) => {
     // El frontend debe firmar con la wallet y luego enviarla via POST /transactions/send
     const unsignedTx = tx.toXDR();
 
+    // tx.result contiene el producto simulado (resultado de la simulación)
+    const product = formatProduct(tx.result);
+
     // ANTIGUO: firma server-side (comentado)
     // const { result } = await tx.signAndSend();
     // res.status(201).json({
@@ -47,7 +50,7 @@ router.post("/", async (req, res) => {
     //   product: formatProduct(result),
     // });
 
-    res.status(200).json({ unsignedTx });
+    res.status(200).json({ unsignedTx, product });
   } catch (error) {
     console.error("Error construyendo transacción de registro:", error);
     res.status(500).json({ error: error.message });
