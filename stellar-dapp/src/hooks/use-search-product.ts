@@ -5,7 +5,7 @@ import { getProduct } from "@/lib/api";
 import { useProductContext } from "./use-product-context";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
+import { useWalletContext } from "@/providers/WalletProvider";
 
 export function useSearchProduct() {
   const { setProduct } = useProductContext();

@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { updatePrice, sendTransaction, getProduct } from "@/lib/api";
 import { signTransaction } from "@/components/tw-blocks/wallet-kit/wallet-kit";
 import { useProductContext } from "./use-product-context";
-import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
+import { useWalletContext } from "@/providers/WalletProvider";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import type { UpdatePriceValues } from "@/lib/validations";
@@ -14,7 +14,13 @@ export function useUpdatePrice() {
   const { walletAddress } = useWalletContext();
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: UpdatePriceValues }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: UpdatePriceValues;
+    }) => {
       if (!walletAddress) {
         throw new Error("Conecte su Wallet");
       }

@@ -3,7 +3,7 @@ import {
   disconnectWalletKit,
   getSelectedWallet,
 } from "./wallet-kit";
-import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
+import { useWalletContext } from "@/providers/WalletProvider";
 
 /**
  * Custom hook that provides wallet connection and disconnection functionality

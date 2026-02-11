@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useWallet } from "./useWallet";
-import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
+import { useWalletContext } from "@/providers/WalletProvider";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Check, Copy, LogOut, ChevronDown, Wallet } from "lucide-react";
