@@ -40,6 +40,7 @@ export interface SendTransactionResponse {
   status: string;
   hash: string;
   ledger?: number;
+  contractId: string;
   resultXdr?: string;
   error?: string;
 }

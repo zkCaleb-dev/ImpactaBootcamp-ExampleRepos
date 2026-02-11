@@ -5,16 +5,19 @@ import { getProduct } from "@/lib/api";
 import { useProductContext } from "./use-product-context";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-
-// TODO: Reemplazar con la public key de la wallet conectada
-const PLACEHOLDER_SIGNER =
-  "GAWVVSA6OUB2T2A6Q4E4YS75PO32YK7TKQJQDODA4GAY7SHGQOETVYPD";
+import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
 
 export function useSearchProduct() {
   const { setProduct } = useProductContext();
+  const { walletAddress } = useWalletContext();
 
   return useMutation({
-    mutationFn: (id: number) => getProduct(id, PLACEHOLDER_SIGNER), // TODO: usar wallet real
+    mutationFn: (id: number) => {
+      if (!walletAddress) {
+        throw new Error("Conecte su Wallet");
+      }
+      return getProduct(id, walletAddress);
+    },
     onSuccess: (data) => {
       setProduct(data);
       toast.success("Producto encontrado");

@@ -1,26 +1,49 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { updateStock } from "@/lib/api";
+import { updateStock, sendTransaction, getProduct } from "@/lib/api";
+import { signTransaction } from "@/components/tw-blocks/wallet-kit/wallet-kit";
+import { useProductContext } from "./use-product-context";
+import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import type { UpdateStockValues } from "@/lib/validations";
 
-// TODO: Reemplazar con la public key de la wallet conectada
-const PLACEHOLDER_SIGNER =
-  "GAWVVSA6OUB2T2A6Q4E4YS75PO32YK7TKQJQDODA4GAY7SHGQOETVYPD";
-
 export function useUpdateStock() {
+  const { setProduct, setTxInfo } = useProductContext();
+  const { walletAddress } = useWalletContext();
+
   return useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdateStockValues }) =>
-      updateStock(id, {
+    mutationFn: async ({ id, data }: { id: number; data: UpdateStockValues }) => {
+      if (!walletAddress) {
+        throw new Error("Conecte su Wallet");
+      }
+
+      // 1. Build
+      const { unsignedTx } = await updateStock(id, {
         quantity: data.quantity,
         operation: data.operation,
-        signer: PLACEHOLDER_SIGNER, // TODO: usar wallet real
-      }),
+        signer: walletAddress,
+      });
+
+      // 2. Sign
+      const signedTx = await signTransaction({
+        unsignedTransaction: unsignedTx,
+        address: walletAddress,
+      });
+
+      // 3. Send
+      const result = await sendTransaction(signedTx);
+
+      // 4. Re-fetch product actualizado
+      const product = await getProduct(id, walletAddress);
+
+      return { ...result, product };
+    },
     onSuccess: (data) => {
-      toast.success("Transacción construida. Pendiente de firma con wallet.");
-      console.log("unsignedTx:", data.unsignedTx);
+      setProduct(data.product);
+      setTxInfo(data.hash, data.contractId);
+      toast.success("Stock actualizado exitosamente");
     },
     onError: (error: AxiosError<{ error: string }>) => {
       const message = error.response?.data?.error || error.message;

@@ -1,25 +1,44 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { registerProduct } from "@/lib/api";
+import { registerProduct, sendTransaction } from "@/lib/api";
+import { signTransaction } from "@/components/tw-blocks/wallet-kit/wallet-kit";
+import { useProductContext } from "./use-product-context";
+import { useWalletContext } from "@/components/tw-blocks/providers/WalletProvider";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
 import type { RegisterProductValues } from "@/lib/validations";
 
-// TODO: Reemplazar con la public key de la wallet conectada
-const PLACEHOLDER_SIGNER =
-  "GAWVVSA6OUB2T2A6Q4E4YS75PO32YK7TKQJQDODA4GAY7SHGQOETVYPD";
-
 export function useRegisterProduct() {
+  const { setTxInfo } = useProductContext();
+  const { walletAddress } = useWalletContext();
+
   return useMutation({
-    mutationFn: (values: RegisterProductValues) =>
-      registerProduct({
+    mutationFn: async (values: RegisterProductValues) => {
+      if (!walletAddress) {
+        throw new Error("Conecte su Wallet");
+      }
+
+      // 1. Build: obtener unsignedTx del backend
+      const { unsignedTx } = await registerProduct({
         ...values,
-        signer: PLACEHOLDER_SIGNER, // TODO: usar wallet real
-      }),
+        signer: walletAddress,
+      });
+
+      // 2. Sign: firmar con la wallet
+      const signedTx = await signTransaction({
+        unsignedTransaction: unsignedTx,
+        address: walletAddress,
+      });
+
+      // 3. Send: enviar la transacción firmada
+      const result = await sendTransaction(signedTx);
+
+      return result;
+    },
     onSuccess: (data) => {
-      toast.success("Transacción construida. Pendiente de firma con wallet.");
-      console.log("unsignedTx:", data.unsignedTx);
+      setTxInfo(data.hash, data.contractId);
+      toast.success("Producto registrado exitosamente");
     },
     onError: (error: AxiosError<{ error: string }>) => {
       const message = error.response?.data?.error || error.message;

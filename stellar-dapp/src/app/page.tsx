@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { WalletButton } from "@/components/tw-blocks/wallet-kit/WalletButtons";
 
 export default function Home() {
   const { product } = useProductContext();
@@ -27,6 +28,10 @@ export default function Home() {
           <p className="mt-2 text-muted-foreground">
             Gestión de productos en Soroban
           </p>
+
+          <div className="flex w-full justify-center mt-4">
+            <WalletButton />
+          </div>
         </header>
 
         <div className="space-y-6">
